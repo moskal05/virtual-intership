@@ -23,7 +23,6 @@ public class MainClass {
         cityService.readFile(file);
         Menu menu = new Menuimplementation(cityService);
         menu.createMenu();
-
     }
 
 }

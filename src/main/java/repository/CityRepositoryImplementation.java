@@ -5,7 +5,6 @@ import model.City;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 
 public class CityRepositoryImplementation implements CityRepository {
@@ -78,16 +77,14 @@ public class CityRepositoryImplementation implements CityRepository {
     @Override
     public List<City> findAll() {
         List<City> cities = new ArrayList();
-        try(Connection connection = DriverManager.getConnection(DB_URL);
-            PreparedStatement statement = connection.prepareStatement(FIND_ALL_CITY);
-            ResultSet resultSet = statement.executeQuery()){
-            while(resultSet.next())
+        try (Connection connection = DriverManager.getConnection(DB_URL);
+             PreparedStatement statement = connection.prepareStatement(FIND_ALL_CITY);
+             ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next())
                 cities.add(rowMapper.apply(resultSet));
             return cities;
-        }catch (SQLException throwable) {
+        } catch (SQLException throwable) {
             throw new IllegalArgumentException(throwable);
         }
     }
-
-
 }

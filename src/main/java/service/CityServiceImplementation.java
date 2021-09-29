@@ -6,9 +6,8 @@ import util.UtilCityParse;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class CityServiceImplementation implements CityService{
     private final CityRepository cityRepository;
@@ -34,23 +33,61 @@ public class CityServiceImplementation implements CityService{
         return cityRepository.findAll();
     }
 
+    /**
+     * Сортировка списка городов по наименованию в алфавитном порядке по убыванию без учета регистра;
+     * @return
+     */
     @Override
     public List<City> findSortedCity() {
-        return null;
+        return cityRepository.findAll().stream()
+                .sorted(Comparator.comparing(City::getName))
+                .collect(Collectors.toList());
     }
 
+    /**
+     * Сортировка списка городов по федеральному округу и наименованию
+     * города внутри каждого федерального округа в алфавитном порядке по убыванию с учетом регистра
+     * @return
+     */
     @Override
     public List<City> findSortedCityByComparator() {
-        return null;
+            return cityRepository.findAll().stream()
+                    .sorted(Comparator.comparing(City::getRegion).thenComparing(City::getName))
+                    .collect(Collectors.toList());
     }
 
+    /**
+     * Поиск города с наибольшим количеством жителей
+     * @return
+     */
     @Override
     public int[] maxPopulationCity() {
-        return new int[0];
+        int maxIndexPopulation = 0;
+        int maxCountPopulation = 0;
+        for(int i = 0; cityRepository.findAll().size() > i; i++){
+            int currentPopulation = cityRepository.findAll().get(i).getPopulation();
+            if(currentPopulation > maxCountPopulation){
+                maxCountPopulation = currentPopulation;
+                maxIndexPopulation = i;
+            }
+        }
+        return new int [] {maxIndexPopulation, maxCountPopulation};
     }
 
+    /**
+     * Поиск количества городов в разрезе регионов
+     * @return
+     */
     @Override
     public Map<String, Integer> countCityInRegion() {
-        return null;
+        Map<String, Integer> countCityInRegion = new HashMap<String, Integer>();
+        List<City> cities = cityRepository.findAll();
+        for(int i = 0; cities.size() > i; i++ ){
+            if(countCityInRegion.containsKey(cities.get(i).getRegion()))
+                countCityInRegion.put(cities.get(i).getRegion(),countCityInRegion.get(cities.get(i).getRegion()) + 1);
+            else
+                countCityInRegion.put(cities.get(i).getRegion(),1);
+        }
+        return countCityInRegion;
     }
 }
